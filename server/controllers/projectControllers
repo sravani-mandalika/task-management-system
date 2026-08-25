@@ -1,83 +1,47 @@
 const Project = require('../models/Project');
-const mongoose = require('mongoose');
+const asyncHandler = require('../utils/asyncHandler');
+const AppError = require('../utils/appError');
 
-// GET /api/projects
-const getProjects = async (req, res) => {
-  try {
-    const projects = await Project.find()
-      .populate('createdBy', 'name email')
-      .populate('members', 'name email');
-    res.json({ success: true, data: projects });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
+const getProjects = asyncHandler(async (req, res) => {
+  const projects = await Project.find()
+    .populate('createdBy', 'name email')
+    .populate('members', 'name email');
+  res.json({ success: true, data: projects });
+});
 
-// GET /api/projects/:id
-const getProjectById = async (req, res) => {
-  try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ success: false, message: 'Invalid project ID' });
-    }
-    const project = await Project.findById(req.params.id)
-      .populate('createdBy', 'name email')
-      .populate('members', 'name email');
-    if (!project) {
-      return res.status(404).json({ success: false, message: 'Project not found' });
-    }
-    res.json({ success: true, data: project });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+const getProjectById = asyncHandler(async (req, res, next) => {
+  const project = await Project.findById(req.params.id)
+    .populate('createdBy', 'name email')
+    .populate('members', 'name email');
+  if (!project) {
+    return next(new AppError('Project not found', 404));
   }
-};
+  res.json({ success: true, data: project });
+});
 
-// POST /api/projects
-const createProject = async (req, res) => {
-  try {
-    const { name, description, status, createdBy, members } = req.body;
-    if (!name || !createdBy) {
-      return res.status(400).json({ success: false, message: 'Name and createdBy are required' });
-    }
-    const project = await Project.create({ name, description, status, createdBy, members });
-    res.status(201).json({ success: true, data: project });
-  } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
-  }
-};
+const createProject = asyncHandler(async (req, res) => {
+  const { name, description, status, createdBy, members } = req.body;
+  const project = await Project.create({ name, description, status, createdBy, members });
+  res.status(201).json({ success: true, data: project });
+});
 
-// PUT /api/projects/:id
-const updateProject = async (req, res) => {
-  try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ success: false, message: 'Invalid project ID' });
-    }
-    const project = await Project.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true
-    });
-    if (!project) {
-      return res.status(404).json({ success: false, message: 'Project not found' });
-    }
-    res.json({ success: true, data: project });
-  } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
+const updateProject = asyncHandler(async (req, res, next) => {
+  const project = await Project.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true
+  });
+  if (!project) {
+    return next(new AppError('Project not found', 404));
   }
-};
+  res.json({ success: true, data: project });
+});
 
-// DELETE /api/projects/:id
-const deleteProject = async (req, res) => {
-  try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ success: false, message: 'Invalid project ID' });
-    }
-    const project = await Project.findByIdAndDelete(req.params.id);
-    if (!project) {
-      return res.status(404).json({ success: false, message: 'Project not found' });
-    }
-    res.json({ success: true, message: 'Project deleted' });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+const deleteProject = asyncHandler(async (req, res, next) => {
+  const project = await Project.findByIdAndDelete(req.params.id);
+  if (!project) {
+    return next(new AppError('Project not found', 404));
   }
-};
+  res.json({ success: true, message: 'Project deleted' });
+});
 
 module.exports = { getProjects, getProjectById, createProject, updateProject, deleteProject };
