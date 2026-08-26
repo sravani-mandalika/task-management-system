@@ -110,7 +110,7 @@ GET /api/tasks?status=IN_PROGRESS&priority=HIGH&page=1&limit=10
 
 ## Screenshots
 
-![Dashboard](screenshots/dashboard (2).png)
+![Dashboard](screenshots/dashboard(2).png)
 ![Projects](screenshots/projects.png)
 ![Project Details](screenshots/project-details.png)
 ![Tasks](screenshots/tasks.png)
