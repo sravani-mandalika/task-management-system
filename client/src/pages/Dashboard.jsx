@@ -39,31 +39,24 @@ function Dashboard() {
   if (error) return <p>{error}</p>;
 
   return (
-    <div>
-      <h1>Dashboard</h1>
-      <table border="1" cellPadding="10">
-        <thead>
-          <tr>
-            <th>Projects</th>
-            <th>Active</th>
-            <th>Tasks</th>
-            <th>Completed</th>
-            <th>Pending</th>
-            <th>High Priority</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{stats.totalProjects}</td>
-            <td>{stats.activeProjects}</td>
-            <td>{stats.totalTasks}</td>
-            <td>{stats.completedTasks}</td>
-            <td>{stats.pendingTasks}</td>
-            <td>{stats.highPriorityTasks}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <div className="page">
+  <h1>Dashboard</h1>
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', marginTop: '20px' }}>
+    {[
+      { label: 'Projects', value: stats.totalProjects },
+      { label: 'Active', value: stats.activeProjects },
+      { label: 'Tasks', value: stats.totalTasks },
+      { label: 'Completed', value: stats.completedTasks },
+      { label: 'Pending', value: stats.pendingTasks },
+      { label: 'High Priority', value: stats.highPriorityTasks }
+    ].map((stat) => (
+      <div key={stat.label} className="card" style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--accent)' }}>{stat.value}</div>
+        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px' }}>{stat.label}</div>
+      </div>
+    ))}
+  </div>
+</div>
   );
 }
 
