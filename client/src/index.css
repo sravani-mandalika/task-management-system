@@ -27,6 +27,22 @@
 * {
   box-sizing: border-box;
 }
+h1 {
+  font-size: 24px;
+}
+h2 {
+  font-size: 18px;
+  margin-top: 32px;
+}
+h3 {
+  font-size: 15px;
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 20px;
+  }
+}
 
 body {
   margin: 0;
@@ -218,9 +234,11 @@ label {
 
 .task-card-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
+  gap: 10px;
   margin-bottom: 6px;
+  flex-wrap: wrap;
 }
 
 .task-card-header h3 {
@@ -252,6 +270,8 @@ label {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .form-error {
@@ -372,4 +392,49 @@ label {
 
 .btn-remove:hover {
   text-decoration: underline;
+}
+
+.task-card-project {
+  display: block;
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.filters-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filters-bar select {
+  width: auto;
+}
+
+@media (max-width: 600px) {
+  .filters-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filters-bar input,
+  .filters-bar select {
+    width: 100%;
+  }
+}
+
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.pagination-info {
+  font-size: 13px;
+  color: var(--text-secondary);
 }

@@ -5,7 +5,10 @@ function TaskCard({ task }) {
   return (
     <div className="card task-card">
       <div className="task-card-header">
-        <h3>{task.title}</h3>
+        <div>
+          <h3>{task.title}</h3>
+          {task.project?.name && <span className="task-card-project">📁 {task.project.name}</span>}
+        </div>
         <StatusBadge value={task.priority} />
       </div>
       {task.description && <p className="task-card-desc">{task.description}</p>}

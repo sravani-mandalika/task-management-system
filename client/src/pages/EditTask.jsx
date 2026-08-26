@@ -1,51 +1,41 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import TaskForm from '../components/TaskForm';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 function EditTask() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [projects, setProjects] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
-  const [formData, setFormData] = useState(null);
+  const [taskData, setTaskData] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const loadData = async () => {
+    const loadTask = async () => {
       try {
-        const [taskRes, projectsRes, usersRes] = await Promise.all([
-          api.get(`/tasks/${id}`),
-          api.get('/projects'),
-          api.get('/users')
-        ]);
-        const task = taskRes.data.data;
-        setFormData({
+        const res = await api.get(`/tasks/${id}`);
+        const task = res.data.data;
+        setTaskData({
           title: task.title,
           description: task.description || '',
           project: task.project?._id || '',
           assignedTo: task.assignedTo?._id || '',
+          createdBy: task.createdBy?._id || '',
           status: task.status,
           priority: task.priority,
           dueDate: task.dueDate ? task.dueDate.slice(0, 10) : ''
         });
-        setProjects(projectsRes.data.data);
-        setUsers(usersRes.data.data);
       } catch (err) {
         setError('Unable to load task.');
       } finally {
         setLoading(false);
       }
     };
-    loadData();
+    loadTask();
   }, [id]);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleUpdate = async (formData) => {
     setError('');
     try {
       await api.put(`/tasks/${id}`, formData);
@@ -65,60 +55,21 @@ function EditTask() {
     }
   };
 
-  if (loading) return <div className="page"><p>Loading task...</p></div>;
-  if (error && !formData) return <div className="page"><p className="form-error">{error}</p></div>;
+  if (loading) return <div className="page"><LoadingSpinner label="Loading task..." /></div>;
+  if (error && !taskData) return <div className="page"><p className="form-error">{error}</p></div>;
 
   return (
     <div className="page">
       <h1>Edit Task</h1>
-      <form className="card" onSubmit={handleSubmit} style={{ maxWidth: '500px' }}>
-        {error && <p className="form-error">{error}</p>}
-        <div className="field">
-          <label>Title</label>
-          <input name="title" value={formData.title} onChange={handleChange} required />
-        </div>
-        <div className="field">
-          <label>Description</label>
-          <textarea name="description" value={formData.description} onChange={handleChange} rows={3} />
-        </div>
-        <div className="field">
-          <label>Project</label>
-          <select name="project" value={formData.project} onChange={handleChange} required>
-            {projects.map((p) => <option key={p._id} value={p._id}>{p.name}</option>)}
-          </select>
-        </div>
-        <div className="field">
-          <label>Assign To</label>
-          <select name="assignedTo" value={formData.assignedTo} onChange={handleChange}>
-            <option value="">Unassigned</option>
-            {users.map((u) => <option key={u._id} value={u._id}>{u.name}</option>)}
-          </select>
-        </div>
-        <div className="field">
-          <label>Status</label>
-          <select name="status" value={formData.status} onChange={handleChange}>
-            <option value="TODO">TODO</option>
-            <option value="IN_PROGRESS">IN_PROGRESS</option>
-            <option value="DONE">DONE</option>
-          </select>
-        </div>
-        <div className="field">
-          <label>Priority</label>
-          <select name="priority" value={formData.priority} onChange={handleChange}>
-            <option value="LOW">LOW</option>
-            <option value="MEDIUM">MEDIUM</option>
-            <option value="HIGH">HIGH</option>
-          </select>
-        </div>
-        <div className="field">
-          <label>Due Date</label>
-          <input type="date" name="dueDate" value={formData.dueDate} onChange={handleChange} />
-        </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button type="submit" className="btn btn-primary">Save Changes</button>
-          <button type="button" className="btn btn-danger" onClick={handleDelete}>Delete Task</button>
-        </div>
-      </form>
+      <TaskForm
+        initialData={taskData}
+        onSubmit={handleUpdate}
+        submitLabel="Save Changes"
+        error={error}
+      />
+      <button className="btn btn-danger" onClick={handleDelete} style={{ marginTop: '12px' }}>
+        Delete Task
+      </button> 
     </div>
   );
 }
