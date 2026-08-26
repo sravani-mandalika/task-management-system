@@ -114,20 +114,3 @@ GET /api/tasks?status=IN_PROGRESS&priority=HIGH&page=1&limit=10
 ![Projects](screenshots/projects.png)
 ![Project Details](screenshots/project-details.png)
 ![Tasks](screenshots/tasks.png)
-
-## Project Structure
-
-task-management-system/
-├── client/ # React frontend
-│ └── src/
-│ ├── api/
-│ ├── components/
-│ └── pages/
-├── server/ # Express backend
-│ ├── controllers/
-│ ├── models/
-│ ├── routes/
-│ ├── middleware/
-│ ├── config/
-│ └── utils/
-└── README.md
