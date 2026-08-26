@@ -1,4 +1,73 @@
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import api from '../api/axios';
+import TaskCard from '../components/TaskCard';
+import LoadingSpinner from '../components/LoadingSpinner';
+
 function Tasks() {
-  return <h1>Tasks</h1>;
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [priorityFilter, setPriorityFilter] = useState('');
+  const [search, setSearch] = useState('');
+
+  const fetchTasks = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const params = new URLSearchParams();
+      if (statusFilter) params.append('status', statusFilter);
+      if (priorityFilter) params.append('priority', priorityFilter);
+      if (search) params.append('search', search);
+      const res = await api.get(`/tasks?${params.toString()}`);
+      setTasks(res.data.data);
+    } catch (err) {
+      setError('Unable to load tasks. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const debounce = setTimeout(fetchTasks, 300); // debounce search input
+    return () => clearTimeout(debounce);
+  }, [statusFilter, priorityFilter, search]);
+
+  return (
+    <div className="page">
+      <div className="page-header">
+        <h1>Tasks</h1>
+        <Link to="/tasks/new" className="btn btn-primary">+ New Task</Link>
+      </div>
+
+      <div className="filters-bar">
+        <input
+          placeholder="Search tasks..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ maxWidth: '240px' }}
+        />
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+          <option value="">All Statuses</option>
+          <option value="TODO">TODO</option>
+          <option value="IN_PROGRESS">IN_PROGRESS</option>
+          <option value="DONE">DONE</option>
+        </select>
+        <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
+          <option value="">All Priorities</option>
+          <option value="LOW">LOW</option>
+          <option value="MEDIUM">MEDIUM</option>
+          <option value="HIGH">HIGH</option>
+        </select>
+      </div>
+
+      {loading && <LoadingSpinner label="Loading tasks..." />}
+      {error && <p className="form-error">{error}</p>}
+      {!loading && !error && tasks.length === 0 && <p className="empty-state">No tasks found.</p>}
+      {!loading && !error && tasks.map((task) => <TaskCard key={task._id} task={task} />)}
+    </div>
+  );
 }
+
 export default Tasks;

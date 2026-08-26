@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-import Dashboard from './pages/dashboard';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Navbar from './components/NavBar';
+import Dashboard from './pages/Dashboard';
 import Projects from './pages/Projects';
 import ProjectDetails from './pages/ProjectDetails';
 import Tasks from './pages/Tasks';
@@ -9,9 +10,7 @@ import EditTask from './pages/EditTask';
 function App() {
   return (
     <BrowserRouter>
-      <nav>
-        <Link to="/">Dashboard</Link> | <Link to="/projects">Projects</Link> | <Link to="/tasks">Tasks</Link>
-      </nav>
+      <Navbar />
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/projects" element={<Projects />} />

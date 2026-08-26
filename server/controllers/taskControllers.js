@@ -8,6 +8,9 @@ const getTasks = asyncHandler(async (req, res) => {
   if (req.query.priority) filter.priority = req.query.priority;
   if (req.query.project) filter.project = req.query.project;
   if (req.query.assignedTo) filter.assignedTo = req.query.assignedTo;
+  if (req.query.search) {
+  filter.title = { $regex: req.query.search, $options: 'i' };
+  }
 
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;

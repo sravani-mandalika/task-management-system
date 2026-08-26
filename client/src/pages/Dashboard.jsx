@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 function Dashboard() {
   const [stats, setStats] = useState(null);
@@ -35,7 +36,7 @@ function Dashboard() {
     fetchStats();
   }, []);
 
-  if (loading) return <p>Loading dashboard...</p>;
+  if (loading) return <LoadingSpinner label="Loading dashboard..." />;
   if (error) return <p>{error}</p>;
 
   return (
